@@ -1440,6 +1440,53 @@ body::before {
     }
 }
 
+/* 移动端横屏支持 */
+@media (max-width: 926px) and (orientation: landscape) {
+    body {
+        min-height: 100vh;
+        overflow-x: hidden;
+    }
+
+    .container {
+        margin: 10px;
+        min-height: calc(100vh - 20px);
+    }
+
+    .timeline-wrapper {
+        height: auto;
+        min-height: calc(100vh - 40px);
+    }
+
+    .title-section {
+        top: 20px;
+        left: 20px;
+        transform: scale(0.8);
+        transform-origin: left top;
+    }
+
+    .stage-section {
+        bottom: 80px;
+        left: 85%;
+        transform: translateX(-50%) scale(0.7);
+    }
+
+    .road-section {
+        bottom: 60px;
+    }
+
+    .milestone {
+        transform: scale(0.8);
+    }
+
+    .milestone-sign {
+        max-width: 160px;
+    }
+
+    .milestone:hover {
+        transform: translateY(-10px) scale(0.9);
+    }
+}
+
 /* 移动端横屏模式优化 */
 @media screen and (max-width: 768px) and (orientation: landscape) {
     body {
