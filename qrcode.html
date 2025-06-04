@@ -101,14 +101,14 @@
             font-size: 16px;
         }
     </style>
-    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+    <script src="https://unpkg.com/qrcode@1.5.3/build/qrcode.min.js"></script>
 </head>
 <body>
     <div class="qr-container">
         <div class="title">🎬 TikTok世界巡演</div>
         <div class="subtitle">扫描二维码在手机上查看互动时间轴</div>
         
-        <div id="qrcode"></div>
+        <div id="qrcode">正在生成二维码...</div>
         
         <div class="url-text" id="url-text">
             https://pai-master.github.io/tiktok-timeline/
@@ -146,38 +146,54 @@
         
         // 等待页面和库加载完成后生成二维码
         window.addEventListener('load', function() {
-            // 检查QRCode库是否已加载
-            if (typeof QRCode !== 'undefined') {
+            setTimeout(function() {
                 generateQRCode();
-            } else {
-                // 如果库还没加载，等待一下再试
-                setTimeout(function() {
-                    if (typeof QRCode !== 'undefined') {
-                        generateQRCode();
-                    } else {
-                        document.getElementById('qrcode').innerHTML = '<p style="color: red;">二维码库加载失败，请刷新页面重试</p>';
-                    }
-                }, 1000);
-            }
+            }, 500);
         });
         
         // 生成二维码函数
         function generateQRCode() {
-            QRCode.toCanvas(document.getElementById('qrcode'), websiteURL, {
-                width: 200,
-                height: 200,
-                colorDark: '#000000',
-                colorLight: '#ffffff',
-                margin: 2,
-                errorCorrectionLevel: 'M'
-            }, function (error) {
-                if (error) {
-                    console.error('二维码生成失败:', error);
-                    document.getElementById('qrcode').innerHTML = '<p style="color: red;">二维码生成失败</p>';
-                } else {
-                    console.log('二维码生成成功!');
-                }
-            });
+            // 检查QRCode库是否已加载
+            if (typeof QRCode !== 'undefined') {
+                // 清空容器
+                document.getElementById('qrcode').innerHTML = '';
+                
+                // 创建canvas元素
+                const canvas = document.createElement('canvas');
+                document.getElementById('qrcode').appendChild(canvas);
+                
+                QRCode.toCanvas(canvas, websiteURL, {
+                    width: 200,
+                    height: 200,
+                    colorDark: '#000000',
+                    colorLight: '#ffffff',
+                    margin: 2,
+                    errorCorrectionLevel: 'M'
+                }, function (error) {
+                    if (error) {
+                        console.error('二维码生成失败:', error);
+                        document.getElementById('qrcode').innerHTML = '<p style="color: red;">二维码生成失败: ' + error.message + '</p>';
+                    } else {
+                        console.log('二维码生成成功!');
+                    }
+                });
+            } else {
+                // 如果库还没加载，再等待一下
+                setTimeout(function() {
+                    if (typeof QRCode !== 'undefined') {
+                        generateQRCode();
+                    } else {
+                        // 使用备用方案：显示文本二维码或提供手动输入链接
+                        document.getElementById('qrcode').innerHTML = `
+                            <div style="border: 2px solid #333; padding: 20px; background: #f0f0f0;">
+                                <p style="color: #666; margin: 0;">二维码库加载失败</p>
+                                <p style="color: #333; margin: 10px 0; font-weight: bold;">请手动访问以下链接：</p>
+                                <p style="font-family: monospace; font-size: 12px; word-break: break-all; background: white; padding: 10px; border: 1px solid #ccc;">${websiteURL}</p>
+                            </div>
+                        `;
+                    }
+                }, 2000);
+            }
         }
         
         // 下载二维码功能
